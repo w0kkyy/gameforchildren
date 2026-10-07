@@ -1,0 +1,601 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Сечения многогранников</title>
+<style>
+:root{--ac:#3d6df2;--bg:#f2f5fa;--card:#fff;--tx:#12203a;--mut:#62728a;--ln:#a7b6cb;--ok:#0f9d73;--bad:#e5484d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a111f;--card:#131c2e;--tx:#e8eefc;--mut:#8d9ebb;--ln:#46577a}}
+:root[data-theme="dark"]{--bg:#0a111f;--card:#131c2e;--tx:#e8eefc;--mut:#8d9ebb;--ln:#46577a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(circle at 10% -5%,color-mix(in srgb,var(--ac) 22%,transparent),transparent 55%),var(--bg);display:flex;justify-content:center}
+#app{width:100%;max-width:920px;padding:18px}
+header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+header h1{flex:1;margin:0;font-size:19px;font-weight:700;letter-spacing:.2px}
+.ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--tx);font-size:18px;cursor:pointer;padding:0;transition:transform .15s,border-color .2s}.ib:hover{border-color:var(--ac)}.ib:active{transform:scale(.92)}
+.dot{display:block;width:18px;height:18px;border-radius:50%;background:var(--ac);margin:auto;transition:background .3s}
+.card{background:var(--card);border-radius:20px;padding:16px;box-shadow:0 8px 28px #0002;border:1px solid color-mix(in srgb,var(--ln) 40%,transparent)}
+.a{animation:up .4s both}@keyframes up{from{opacity:0;transform:translateY(14px)}}
+h2{margin:0 0 4px;font-size:19px}p{margin:6px 0;color:var(--mut)}
+.btn{font:inherit;font-weight:600;border:0;border-radius:14px;padding:12px 20px;background:var(--ac);color:#fff;cursor:pointer;margin-top:10px;box-shadow:0 6px 16px color-mix(in srgb,var(--ac) 40%,transparent);transition:transform .12s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:scale(.96)}.btn.alt{background:transparent;color:var(--ac);box-shadow:none;border:1.5px solid var(--ac)}
+.tile{display:flex;gap:14px;align-items:center;width:100%;text-align:left;margin:0 0 10px;padding:14px;border-radius:18px;border:1px solid color-mix(in srgb,var(--ln) 50%,transparent);background:var(--card);color:var(--tx);font:inherit;cursor:pointer;box-shadow:0 4px 16px #0001;transition:transform .15s,border-color .2s,box-shadow .2s;animation:up .45s both}
+.tile:hover{transform:translateX(4px);border-color:var(--ac);box-shadow:0 8px 22px #0002}.tile:active{transform:scale(.98)}
+.tile .ic{font-weight:700;font-size:15px;letter-spacing:1px;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--ac) 16%,transparent);color:var(--ac);flex:none}
+.tile .tx{flex:1}.tile b{display:block;font-size:17px}.tile span{color:var(--mut);font-size:14px}.tile .ch{font-size:26px;color:var(--mut);font-style:normal;transition:transform .15s}.tile:hover .ch{transform:translateX(3px);color:var(--ac)}
+.info{display:flex;justify-content:space-between;align-items:center;font-weight:600;margin:0 4px 4px;font-size:15px}.info .hh{color:var(--bad);letter-spacing:2px}
+svg{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.opts button{font:inherit;font-weight:600;padding:12px 8px;border-radius:14px;border:2px solid var(--ln);background:var(--bg);color:var(--tx);cursor:pointer;transition:transform .12s,border-color .2s}.opts button:hover{border-color:var(--ac)}.opts button:active{transform:scale(.96)}
+.opts button.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 25%,transparent);animation:pl .5s}.opts button.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 22%,transparent);animation:sk .4s}
+@keyframes pl{40%{transform:scale(1.08)}}
+.msg{color:var(--bad);font-weight:600}.good{color:var(--ok);font-weight:600}
+.shake{animation:sk .4s}@keyframes sk{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.ghost{animation:p 1.3s infinite}@keyframes p{50%{opacity:.3}}
+.sd{stroke-dasharray:1;stroke-dashoffset:1;animation:dr .45s forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.fl{animation:fi .6s}@keyframes fi{from{fill-opacity:0}}
+.pop{transform-box:fill-box;transform-origin:center;animation:pp .35s}@keyframes pp{from{transform:scale(0)}60%{transform:scale(1.4)}}
+.bar{height:8px;border-radius:4px;background:color-mix(in srgb,var(--ln) 40%,transparent);overflow:hidden;margin:6px 4px}.bar i{display:block;height:100%;background:var(--ac);transition:width .5s}
+.big{font-size:38px;font-weight:800;text-align:center;margin:4px 0;color:var(--ac);animation:pl .7s}
+
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mode-card{position:relative;height:245px;perspective:900px;cursor:pointer;animation:up .5s both}
+.mode-card .mc-inner{position:relative;width:100%;height:100%;transition:transform .65s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.mode-card:hover .mc-inner{transform:rotateY(180deg)}
+.mode-card:active .mc-inner{transform:scale(.97)}
+.mode-card .mc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:18px;border:1px solid color-mix(in srgb,var(--ln) 45%,transparent);box-shadow:0 12px 30px #0002}
+.mode-card .mc-front{background:linear-gradient(145deg,var(--mc),color-mix(in srgb,var(--mc) 65%,#000));color:#fff}
+.mode-card .mc-back{background:var(--card);color:var(--tx);transform:rotateY(180deg);align-items:flex-start;justify-content:flex-start}
+.mode-card .mc-num{font-size:14px;font-weight:800;letter-spacing:2px;opacity:.8}
+.mode-card .mc-icon{font-size:48px;line-height:1;margin:18px 0 12px;filter:drop-shadow(0 5px 8px #0003)}
+.mode-card .mc-title{font-size:23px;font-weight:800;text-align:center}
+.mode-card .mc-hint{font-size:12px;opacity:.85;margin-top:8px;text-align:center}
+.mode-card .mc-back h3{margin:0 0 8px;font-size:19px}
+.mode-card .mc-back p{margin:0;color:var(--mut);font-size:14px}
+.mode-card .mc-back .mc-stat{margin-top:auto;width:100%;padding-top:12px;border-top:1px solid var(--ln);font-weight:700;color:var(--ac)}
+@media(max-width:700px){.mode-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:470px){.mode-grid{grid-template-columns:1fr}.mode-card{height:220px}}
+.card:hover{transform:translateY(-2px);transition:transform .2s,box-shadow .2s}
+.success-flash{animation:successFlash .5s}
+@keyframes successFlash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 70%,transparent)}50%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.wrong-flash{animation:wrongFlash .45s}
+@keyframes wrongFlash{25%{box-shadow:0 0 0 5px color-mix(in srgb,var(--bad) 35%,transparent)}}
+.spark{position:fixed;width:7px;height:7px;border-radius:2px;pointer-events:none;z-index:20;animation:sparkOut .75s ease-out forwards}
+@keyframes sparkOut{to{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+.mode-note{font-size:13px;color:var(--mut);text-align:center;margin:4px 0 12px}
+#sw{touch-action:none}#sw svg{overflow:visible}#sw circle[data-point]{-webkit-tap-highlight-color:transparent}
+
+.free-wrap{display:flex;flex-direction:column;gap:10px}
+.free-stage{position:relative}
+.free-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.free-toolbar .group{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.free-toolbar .label{font-size:12px;color:var(--mut);font-weight:700}
+.free-toolbar button.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.free-status{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.free-badge{padding:5px 9px;border-radius:999px;background:color-mix(in srgb,var(--ac) 10%,var(--card));border:1px solid var(--ln)}
+.free-canvas-wrap{overflow:hidden;border-radius:20px}
+.free-canvas-wrap canvas{min-height:480px}
+.free-tip{padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--ac) 8%,var(--card));font-size:13px}
+@media(max-width:700px){.free-canvas-wrap canvas{min-height:400px}}
+.free-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.free-toolbar button,.free-shape{font:inherit;font-weight:700;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:11px;padding:9px 11px;cursor:pointer}
+.free-toolbar button:hover,.free-shape:hover{border-color:var(--ac)}
+.free-shape.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+#freeCanvas{width:100%;height:auto;display:block;border-radius:20px;background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--ac) 12%,transparent),transparent 60%),var(--card);border:1px solid var(--ln);touch-action:none;cursor:grab}
+#freeCanvas.drawing{cursor:crosshair}
+.free-help{font-size:13px;color:var(--mut)}
+.theory-tabs{display:flex;gap:7px;overflow:auto;padding-bottom:4px}
+.theory-tabs button{white-space:nowrap}
+.theory-section{animation:up .35s both}
+.theory-example{border-left:4px solid var(--ac);padding:12px 14px;background:color-mix(in srgb,var(--ac) 8%,var(--card));border-radius:0 14px 14px 0;margin:12px 0}
+.theory-example b{color:var(--ac)}
+.step{display:flex;gap:10px;margin:10px 0}.step i{font-style:normal;background:var(--ac);color:#fff;border-radius:50%;width:25px;height:25px;display:grid;place-items:center;font-weight:800;flex:none}
+
+.settings-box{max-width:620px;margin:0 auto}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid color-mix(in srgb,var(--ln) 45%,transparent)}.setting-row:last-child{border-bottom:0}.setting-row b{display:block}.setting-row span{color:var(--mut);font-size:13px}.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{font:inherit;border:1px solid var(--ln);background:var(--bg);color:var(--tx);padding:9px 12px;border-radius:11px;cursor:pointer}.seg button.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.free-canvas-wrap{position:relative;overflow:hidden;border-radius:22px;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--ac) 10%,transparent),transparent 60%),var(--bg);border:1px solid var(--ln);box-shadow:inset 0 0 35px #0001}
+.free-canvas-wrap canvas{display:block;width:100%;height:620px;touch-action:none;cursor:grab}.free-canvas-wrap canvas.drawing{cursor:crosshair}.free-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.free-controls button{font:inherit}
+.snap-indicator{font-size:13px;color:var(--ok);font-weight:700}
+
+/* LOADER (Uiverse.io Admin12121) */
+#loader-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
+#loader-overlay.hide{opacity:0;visibility:hidden;pointer-events:none}
+#loader-overlay .loader-title{margin-top:24px;font-weight:700;font-size:18px;color:var(--tx)}
+#loader-overlay .loader-sub{margin-top:6px;font-size:14px;color:var(--mut)}
+.loader{--duration:3s;--primary:rgba(61,109,242,1);--primary-light:#5b8aff;--primary-rgba:rgba(61,109,242,0);width:200px;height:320px;position:relative;transform-style:preserve-3d}
+@media(max-width:480px){.loader{zoom:.44}}
+.loader:before,.loader:after{--r:20.5deg;content:"";width:320px;height:140px;position:absolute;right:32%;bottom:-11px;background:#e8e8e8;transform:translateZ(200px) rotate(var(--r));animation:mask var(--duration) linear forwards infinite}
+:root[data-theme="dark"] .loader:before,:root[data-theme="dark"] .loader:after{background:#1a2438}
+.loader:after{--r:-20.5deg;right:auto;left:32%}
+.loader .ground{position:absolute;left:-50px;bottom:-120px;transform-style:preserve-3d;transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}
+.loader .ground div{transform:rotateX(90deg) rotateY(0deg) translate(-48px,-120px) translateZ(100px) scale(0);width:200px;height:200px;background:linear-gradient(45deg,var(--primary) 0%,var(--primary) 50%,var(--primary-light) 50%,var(--primary-light) 100%);transform-style:preserve-3d;animation:ground var(--duration) linear forwards infinite}
+.loader .ground div:before,.loader .ground div:after{--rx:90deg;--ry:0deg;--x:44px;--y:162px;--z:-50px;content:"";width:156px;height:300px;opacity:0;background:linear-gradient(var(--primary),var(--primary-rgba));position:absolute;transform:rotateX(var(--rx)) rotateY(var(--ry)) translate(var(--x),var(--y)) translateZ(var(--z));animation:ground-shine var(--duration) linear forwards infinite}
+.loader .ground div:after{--rx:90deg;--ry:90deg;--x:0;--y:177px;--z:150px}
+.loader .box{--x:0;--y:0;position:absolute;animation:var(--duration) linear forwards infinite;transform:translate(var(--x),var(--y))}
+.loader .box div{background-color:var(--primary);width:48px;height:48px;position:relative;transform-style:preserve-3d;animation:var(--duration) ease forwards infinite;transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}
+.loader .box div:before,.loader .box div:after{--rx:90deg;--ry:0deg;--z:24px;--y:-24px;--x:0;content:"";position:absolute;background-color:inherit;width:inherit;height:inherit;transform:rotateX(var(--rx)) rotateY(var(--ry)) translate(var(--x),var(--y)) translateZ(var(--z));filter:brightness(var(--b,1.2))}
+.loader .box div:after{--rx:0deg;--ry:90deg;--x:24px;--y:0;--b:1.4}
+.loader .box.box0{--x:-220px;--y:-120px;left:58px;top:108px}.loader .box.box1{--x:-260px;--y:120px;left:25px;top:120px}
+.loader .box.box2{--x:120px;--y:-190px;left:58px;top:64px}.loader .box.box3{--x:280px;--y:-40px;left:91px;top:120px}
+.loader .box.box4{--x:60px;--y:200px;left:58px;top:132px}.loader .box.box5{--x:-220px;--y:-120px;left:25px;top:76px}
+.loader .box.box6{--x:-260px;--y:120px;left:91px;top:76px}.loader .box.box7{--x:-240px;--y:200px;left:58px;top:87px}
+.loader .box0{animation-name:box-move0}.loader .box0 div{animation-name:box-scale0}
+.loader .box1{animation-name:box-move1}.loader .box1 div{animation-name:box-scale1}
+.loader .box2{animation-name:box-move2}.loader .box2 div{animation-name:box-scale2}
+.loader .box3{animation-name:box-move3}.loader .box3 div{animation-name:box-scale3}
+.loader .box4{animation-name:box-move4}.loader .box4 div{animation-name:box-scale4}
+.loader .box5{animation-name:box-move5}.loader .box5 div{animation-name:box-scale5}
+.loader .box6{animation-name:box-move6}.loader .box6 div{animation-name:box-scale6}
+.loader .box7{animation-name:box-move7}.loader .box7 div{animation-name:box-scale7}
+@keyframes box-move0{12%{transform:translate(var(--x),var(--y))}25%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale0{6%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}14%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move1{16%{transform:translate(var(--x),var(--y))}29%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale1{10%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}18%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move2{20%{transform:translate(var(--x),var(--y))}33%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale2{14%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}22%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move3{24%{transform:translate(var(--x),var(--y))}37%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale3{18%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}26%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move4{28%{transform:translate(var(--x),var(--y))}41%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale4{22%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}30%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move5{32%{transform:translate(var(--x),var(--y))}45%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale5{26%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}34%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move6{36%{transform:translate(var(--x),var(--y))}49%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale6{30%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}38%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes box-move7{40%{transform:translate(var(--x),var(--y))}53%,52%{transform:translate(0,0)}80%{transform:translate(0,-32px)}90%,100%{transform:translate(0,188px)}}
+@keyframes box-scale7{34%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(0)}42%,100%{transform:rotateY(-47deg) rotateX(-15deg) rotateZ(15deg) scale(1)}}
+@keyframes ground{0%,65%{transform:rotateX(90deg) rotateY(0deg) translate(-48px,-120px) translateZ(100px) scale(0)}75%,90%{transform:rotateX(90deg) rotateY(0deg) translate(-48px,-120px) translateZ(100px) scale(1)}100%{transform:rotateX(90deg) rotateY(0deg) translate(-48px,-120px) translateZ(100px) scale(0)}}
+@keyframes ground-shine{0%,70%{opacity:0}75%,87%{opacity:.2}100%{opacity:0}}
+@keyframes mask{0%,65%{opacity:0}66%,100%{opacity:1}}
+/* MOBILE EXTRA */
+@media(max-width:600px){.btn{width:100%}.opts{grid-template-columns:1fr}.opts button{min-height:52px;padding:14px}.setting-row{flex-direction:column;align-items:flex-start}.seg{width:100%}.seg button{flex:1}}
+
+</style></head><body>
+<div id="loader-overlay">
+  <div class="loader">
+    <div class="box box0"><div></div></div>
+    <div class="box box1"><div></div></div>
+    <div class="box box2"><div></div></div>
+    <div class="box box3"><div></div></div>
+    <div class="box box4"><div></div></div>
+    <div class="box box5"><div></div></div>
+    <div class="box box6"><div></div></div>
+    <div class="box box7"><div></div></div>
+    <div class="ground"><div></div></div>
+  </div>
+  <div class="loader-title">Сечения многогранников</div>
+  <div class="loader-sub">Загрузка тренажёра…</div>
+</div>
+<canvas id="cf" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9"></canvas>
+<div id="app"><header><button class="ib" id="bk" onclick="menu()">←</button><h1>Сечения многогранников</h1><button class="ib" onclick="acc()" title="Цвет"><i class="dot"></i></button><button class="ib" onclick="soundOn=!soundOn;this.textContent=soundOn?'🔊':'🔇';clickSound()" title="Звук">🔊</button><button class="ib" onclick="settings()" title="Настройки">⚙</button><button class="ib" onclick="theme()" title="Тема">◐</button></header><main id="mn"></main></div>
+<script>
+/* ============================================================
+   РАЗДЕЛЫ КОДА (для быстрого поиска):
+   1. ДАННЫЕ — SOL, LV, NAMES (фигуры и уровни)
+   2. УТИЛИТЫ — $, rnd, co, pr, share...
+   3. СОСТОЯНИЕ — G, best, settingsState, F
+   4. ЗВУК И ЭФФЕКТЫ — tone, goodSound, conf, theme
+   5. МЕНЮ И НАВИГАЦИЯ — menu, settings, theory
+   6. ИГРОВАЯ ЛОГИКА — mk, start, load, side, trySide, ans
+   7. РЕЖИМ ЗАДАЧ — startTasks
+   8. БЛИЦ — blitz, bq, ba
+   9. ОТРИСОВКА SVG — draw
+   10. СВОБОДНАЯ 3D — FSH, freeDraw, freePointer...
+   11. РЕНДЕР ИНТЕРФЕЙСА — R()
+   12. ЗАПУСК — loader hide + menu()
+   ============================================================ */
+const bx=(v,k)=>Object.fromEntries(Object.entries(v).map(([a,p])=>[a,p.map((x,i)=>x*k[i])]));
+const CUBE={A:[0,0,0],B:[1,0,0],C:[1,1,0],D:[0,1,0],A1:[0,0,1],B1:[1,0,1],C1:[1,1,1],D1:[0,1,1]},CE='A-B B-C C-D D-A A1-B1 B1-C1 C1-D1 D1-A1 A-A1 B-B1 C-C1 D-D1',CF='A,B,C,D A1,B1,C1,D1 A,B,B1,A1 B,C,C1,B1 C,D,D1,C1 D,A,A1,D1';
+const SOL={
+cube:{n:'Куб',v:CUBE,e:CE,h:'A-B D-A A-A1',f:CF},
+box:{n:'Параллелепипед',v:bx(CUBE,[1.2,.9,.7]),e:CE,h:'A-B D-A A-A1',f:CF},
+pyr:{n:'Пирамида',v:{A:[0,0,0],B:[1,0,0],C:[1,1,0],D:[0,1,0],S:[.5,.5,1.2]},e:'A-B B-C C-D D-A A-S B-S C-S D-S',h:'A-B D-A A-S',f:'A,B,C,D A,B,S B,C,S C,D,S D,A,S'},
+pri:{n:'Призма',v:{A:[0,0,0],B:[1,0,0],C:[.5,1,0],A1:[0,0,1],B1:[1,0,1],C1:[.5,1,1]},e:'A-B B-C C-A A1-B1 B1-C1 C1-A1 A-A1 B-B1 C-C1',h:'A-B C-A A-A1',f:'A,B,C A1,B1,C1 A,B,B1,A1 B,C,C1,B1 C,A,A1,C1'},
+tet:{n:'Тетраэдр',v:{A:[0,0,0],B:[1,0,0],C:[.5,1,0],S:[.7,.4,1.1]},e:'A-B B-C C-A A-S B-S C-S',h:'A-B C-A A-S',f:'A,B,C A,B,S B,C,S C,A,S'},
+oct:{n:'Октаэдр',v:{T:[.5,.5,1.25],A:[0,0,.55],B:[1,0,.55],C:[1,1,.55],D:[0,1,.55],U:[.5,.5,-.15]},e:'T-A T-B T-C T-D A-B B-C C-D D-A U-A U-B U-C U-D',h:'T-A T-D U-A U-D',f:'T,A,B T,B,C T,C,D T,D,A U,A,B U,B,C U,C,D U,D,A'},
+pri5:{n:'Пятиугольная призма',v:{A:[0,0,0],B:[.95,0,0],C:[1.18,.75,0],D:[.55,1.25,0],E:[-.15,.7,0],A1:[0,0,1],B1:[.95,0,1],C1:[1.18,.75,1],D1:[.55,1.25,1],E1:[-.15,.7,1]},e:'A-B B-C C-D D-E E-A A1-B1 B1-C1 C1-D1 D1-E1 E1-A1 A-A1 B-B1 C-C1 D-D1 E-E1',h:'A-B E-A A-A1',f:'A,B,C,D,E A1,B1,C1,D1,E1 A,B,B1,A1 B,C,C1,B1 C,D,D1,C1 D,E,E1,D1 E,A,A1,E1'}};
+const T2='Плоскость пересекает параллельные грани по параллельным прямым.',T1='Сторона сечения лежит в грани, поэтому её концы всегда лежат в одной грани.';
+const PA=[['A','A1',.6],['B','B1',.9],['C','C1',.5],['D','D1',.2]],SQ=[['A','B',.5],['D','C',.5],['D1','C1',.5],['A1','B1',.5]],PE=[['A','A1',.2],['B','B1',.8],['B1','C1',.4],['C1','D1',.5],['D','D1',.7]],HX=[['A1','B1',.5],['B1','B',.5],['B','C',.5],['C','D',.5],['D','D1',.5],['D1','A1',.5]];
+const LV=[
+{s:'cube',n:'Параллелограмм',d:2,p:PA,t:T2},
+{s:'cube',n:'Квадрат',d:1,p:SQ,t:'Плоскость параллельна грани, поэтому сечение равно этой грани.'},
+{s:'cube',n:'Треугольник',d:1,p:[['B','A',.4],['B','B1',.5],['B','C',.3]],t:'Срезали угол куба: пересечены три грани, значит три стороны.'},
+{s:'cube',n:'Прямоугольник',d:2,p:['A','C','C1','A1'],t:'Диагональное сечение проходит через два противоположных ребра.'},
+{s:'cube',n:'Пятиугольник',d:3,p:PE,t:'Сторон не больше, чем граней, которые пересекает плоскость. Здесь их пять.'},
+{s:'cube',n:'Шестиугольник',d:3,p:HX,t:'Плоскость через середины шести рёбер даёт правильный шестиугольник, это максимум для куба.'},
+{s:'pyr',n:'Квадрат',d:1,p:[['A','S',.5],['B','S',.5],['C','S',.5],['D','S',.5]],t:'Сечение параллельно основанию и подобно ему.'},
+{s:'pyr',n:'Треугольник',d:1,p:['S',['A','B',.3],['D','C',.7]],t:'Плоскость через вершину пирамиды даёт треугольник.'},
+{s:'pyr',n:'Треугольник',d:2,p:['A','S','C'],t:'Диагональное сечение пирамиды — треугольник ASC.'},
+{s:'pyr',n:'Трапеция',d:2,p:[['A','S',.4],['B','S',.4],['C','S',.6],['D','S',.6]],t:'Две стороны лежат на параллельных прямых, две другие — нет.'},
+{s:'pri',n:'Треугольник',d:1,p:[['A','A1',.5],['B','B1',.5],['C','C1',.5]],t:'Сечение параллельно основанию и равно ему.'},
+{s:'pri',n:'Прямоугольник',d:2,p:['A',['B','C',.5],['B1','C1',.5],'A1'],t:'Плоскость проходит через боковое ребро, перпендикулярное основанию.'},
+{s:'pri',n:'Трапеция',d:3,p:[['A','A1',.3],['B','B1',.3],['B1','C1',.778],['A1','C1',.778]],t:T2},
+{s:'cube',n:'Прямоугольник',d:2,p:[['A','A1',.3],['B','B1',.3],['C','C1',.9],['D','D1',.9]],t:'Противоположные стороны параллельны, а угол между сторонами прямой.'},
+{s:'cube',n:'Трапеция',d:2,p:[['A','B',.8],['A','D',.8],['A1','D1',.5],['A1','B1',.5]],t:'Параллельны стороны на верхней и нижней гранях, боковые стороны не параллельны.'},
+{s:'pyr',n:'Трапеция',d:2,p:['C','D',['A','S',.4],['B','S',.4]],t:'Плоскость проходит через сторону основания CD, поэтому XY параллельна CD.'},
+{s:'pri',n:'Трапеция',d:2,p:['A','B',['B1','C1',.5],['A1','C1',.5]],t:'Линия на верхней грани параллельна AB, но вдвое короче.'},
+{s:'pri',n:'Прямоугольник',d:1,p:[['A','C',.4],['B','C',.4],['B1','C1',.4],['A1','C1',.4]],t:'Плоскость параллельна боковой грани, поэтому сечение — прямоугольник.'},
+{s:'box',n:'Прямоугольник',d:1,p:SQ,t:'Плоскость параллельна грани, сечение равно этой грани.'},
+{s:'box',n:'Шестиугольник',d:3,p:HX,t:'Плоскость пересекает все шесть граней.'},
+{s:'box',n:'Пятиугольник',d:3,p:PE,t:'Плоскость пересекает пять граней.'},
+{s:'box',n:'Параллелограмм',d:2,p:PA,t:T2},
+{s:'tet',n:'Треугольник',d:1,p:[['A','S',.5],['B','S',.5],['C','S',.5]],t:'Сечение параллельно основанию ABC.'},
+{s:'tet',n:'Параллелограмм',d:2,p:[['A','S',.5],['S','B',.5],['B','C',.5],['C','A',.5]],t:'Плоскость параллельна двум скрещивающимся рёбрам AB и SC.'},
+{s:'tet',n:'Треугольник',d:2,p:['A','B',['C','S',.5]],t:'Плоскость проходит через ребро AB и середину ребра SC.'},
+{s:'oct',n:'Квадрат',d:1,p:[['A','B',.5],['B','C',.5],['C','D',.5],['D','A',.5]],t:'Сечение проходит через середины четырёх рёбер экватора октаэдра.'},
+{s:'oct',n:'Треугольник',d:2,p:['T',['A','B',.5],['D','A',.5]],t:'Плоскость проходит через вершину октаэдра и две точки на его рёбрах.'},
+{s:'pri5',n:'Пятиугольник',d:1,p:['A','B','C','D','E'],t:'Сечение совпадает с основанием пятиугольной призмы.'},
+{s:'pri5',n:'Прямоугольник',d:2,p:['A',['B','C',.5],['B1','C1',.5],'A1'],t:'Плоскость проходит через боковое ребро и параллельна одной из сторон основания.'}];
+const NAMES=['Треугольник','Квадрат','Прямоугольник','Параллелограмм','Трапеция','Пятиугольник','Шестиугольник'];
+const $=i=>document.getElementById(i),rnd=a=>a[Math.floor(Math.random()*a.length)],shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]),sub=n=>n.replace('1','₁');
+const co=(so,s)=>{const v=SOL[so].v;if(typeof s=='string')return v[s];const[a,b,t]=s;return v[a].map((x,i)=>x+t*(v[b][i]-x))};
+const pr=p=>[200+(p[0]-p[1])*108,188+(p[0]+p[1])*62-p[2]*125];
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+const sv=s=>typeof s=='string'?[s]:[s[0],s[1]],fs=(so,s)=>SOL[so].f.split(' ').filter(f=>sv(s).every(v=>f.split(',').includes(v))),share=(so,a,b)=>{const x=fs(so,b);return fs(so,a).some(f=>x.includes(f))};
+let G={},best={},tmr=0,dr=null,ACC=['#3d6df2','#7c4ddb','#0f9d73','#d9811a'],ai=0;
+let settingsState={inputMode:'drag'};let F={shape:'cube',rx:-.42,ry:.55,zoom:1,drag:null,cut:null,pts:[],show:false,labels:[],plane:null,mode:'rotate',hover:null,zoomLocked:false,snapA:null,snapB:null};
+
+try{best=JSON.parse(localStorage.getItem('sg')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('sg',JSON.stringify(best))}catch(e){}};
+
+let audioCtx=null,soundOn=true;
+function tone(freq,dur,type='sine',gain=.055){
+  if(!soundOn)return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
+    o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+function goodSound(){tone(660,.09,'sine',.05);setTimeout(()=>tone(880,.13,'sine',.055),65)}
+function badSound(){tone(180,.12,'sawtooth',.04);setTimeout(()=>tone(120,.16,'sawtooth',.035),90)}
+function clickSound(){tone(420,.045,'triangle',.025)}
+function sparkle(){
+  for(let i=0;i<18;i++){
+    const s=document.createElement('i');s.className='spark';
+    s.style.left=(innerWidth/2+(Math.random()-.5)*90)+'px';
+    s.style.top=(innerHeight*.48+(Math.random()-.5)*50)+'px';
+    s.style.setProperty('--dx',((Math.random()-.5)*260)+'px');
+    s.style.setProperty('--dy',((Math.random()-.5)*220)+'px');
+    s.style.background='var(--ac)';document.body.appendChild(s);
+    setTimeout(()=>s.remove(),800);
+  }
+}
+function theme(){const r=document.documentElement;r.dataset.theme=(r.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))=='dark'?'light':'dark'}
+function acc(){ai=(ai+1)%4;document.documentElement.style.setProperty('--ac',ACC[ai])}
+function conf(){const cv=$('cf'),x=cv.getContext('2d'),W=cv.width=innerWidth,H=cv.height=innerHeight,cs=[getComputedStyle(document.documentElement).getPropertyValue('--ac').trim(),'#0f9d73','#f5b301','#e5484d','#7c4ddb'];
+ const P=Array.from({length:120},()=>({x:W/2,y:H*.55,vx:(Math.random()-.5)*18,vy:-Math.random()*17-4,s:6+Math.random()*7,c:rnd(cs),r:Math.random()*6,vr:(Math.random()-.5)*.4}));let f=0;
+ (function a(){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.globalAlpha=Math.max(0,1-f/120);x.fillRect(-p.s/2,-p.s/3,p.s,p.s*.6);x.restore()});if(++f<120)requestAnimationFrame(a);else x.clearRect(0,0,W,H)})()}
+function menu(){clearInterval(tmr);G={v:'menu',an:1};R()}
+function mk(L,dec,sp){const so=L.s,c=(sp||L.p).map((s,i)=>({s,pos:co(so,s),i}));
+ if(dec){const es=SOL[so].e.split(' ');let n=L.d==1?2:L.d==2?4:6,k=0;
+  while(n>0&&k++<99){const[a,b]=rnd(es).split('-'),s=[a,b,rnd([.25,.5,.75])],pos=co(so,s);if(c.every(q=>dist(q.pos,pos)>.14)){c.push({s,pos,i:-1});n--}}
+  if(L.p.some(q=>typeof q=='string')){const vk=rnd(Object.keys(SOL[so].v).filter(x=>!L.p.includes(x)));c.push({s:vk,pos:SOL[so].v[vk],i:-1})}}
+ const lt=shuf('MNKPQRTUWXYZ'.split(''));c.forEach(q=>q.l=typeof q.s=='string'?q.s:lt.pop());return c}
+function mkErr(L){const so=L.s,n=L.p.length,es=SOL[so].e.split(' ');let sp,bad,k,t=0;
+ do{k=Math.floor(Math.random()*n);const[a,b]=rnd(es).split('-');sp=L.p.slice();sp[k]=[a,b,rnd([.25,.5,.75])];
+  bad=[...Array(n).keys()].filter(i=>!share(so,sp[i],sp[(i+1)%n]))}
+ while(t++<300&&(!bad.length||dist(co(so,sp[k]),co(so,L.p[k]))<.2||sp.some((s,i)=>i!=k&&dist(co(so,s),co(so,sp[k]))<.12)));
+ return{L,c:mk(L,0,sp),sides:[...Array(n).keys()].map(i=>[i,(i+1)%n]),bad,stage:'e',msg:'',st:3}}
+function start(m,d){G={v:'play',m,score:0,lives:3,idx:0,d,auto:m=='learn',hints:3,clickPoint:null};
+ G.list=m=='learn'?[2,6,0].map(i=>LV[i]):m=='con'?shuf(LV.filter(l=>l.d==d)):shuf(LV);load()}
+function load(){const L=G.list[G.idx];G.an=1;G.lv=G.m=='err'?mkErr(L):{L,c:mk(L,1),sides:[],st:3,stage:'b',hint:null,msg:'',ans:null,wr:[],opts:null,nw:-1};R()}
+function mist(){G.sk=1;if(G.m=='mar'||G.m=='err'||G.m=='tasks'){G.lives--;if(G.lives<=0){fin();return 1}}else G.lv.st=Math.max(0,G.lv.st-1)}
+const sp=e=>{const s=document.querySelector('#sw svg'),p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(s.getScreenCTM().inverse())};
+function pd(e,i){
+ if(G.v!='play'||!G.lv||G.lv.stage!='b')return;
+ e.preventDefault();
+ e.stopPropagation();
+ if(settingsState.inputMode==='click'){
+   if(G.clickPoint===undefined||G.clickPoint===null){
+     G.clickPoint=i;
+     G.lv.msg='Теперь нажми на вторую точку сечения.';
+     clickSound();
+     R();
+   }else if(G.clickPoint!==i){
+     const a=G.clickPoint;
+     const ok=trySide(a,i);
+     G.clickPoint=ok?null:a;
+     R();
+   }
+   return;
+ }
+ dr=i;
+ try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}
+ const s=document.querySelector('#sw svg'),q=pr(G.lv.c[i].pos),l=document.createElementNS('http://www.w3.org/2000/svg','line');
+ l.id='drg';l.setAttribute('x1',q[0]);l.setAttribute('y1',q[1]);l.setAttribute('x2',q[0]);l.setAttribute('y2',q[1]);
+ l.setAttribute('stroke-width',6);l.setAttribute('stroke-dasharray','1 9');l.setAttribute('stroke-linecap','round');
+ l.style.stroke='var(--ac)';l.style.pointerEvents='none';s.appendChild(l);
+}
+addEventListener('pointermove',e=>{
+ if(dr===null||settingsState.inputMode==='click')return;
+ const q=sp(e),l=$('drg');if(l){l.setAttribute('x2',q.x);l.setAttribute('y2',q.y)}
+});
+function targetPoint(e){
+ const els=document.elementsFromPoint(e.clientX,e.clientY);
+ for(const el of els){if(el&&el.dataset&&el.dataset.point!==undefined)return Number(el.dataset.point)}
+ const q=sp(e);let b=-1,bd=52;
+ G.lv.c.forEach((c,j)=>{const p=pr(c.pos),d=Math.hypot(p[0]-q.x,p[1]-q.y);if(d<bd){bd=d;b=j}});
+ return b;
+}
+addEventListener('pointerup',e=>{
+ if(dr===null||settingsState.inputMode==='click')return;
+ const i=dr;dr=null;$('drg')?.remove();
+ const b=targetPoint(e);if(b>=0&&b!==i)side(i,b);
+});
+addEventListener('pointercancel',()=>{dr=null;$('drg')?.remove()});
+
+function trySide(i,j){
+ const l=G.lv,n=l.L.p.length,c=l.c;let m='';
+ if(c[i].i<0||c[j].i<0)m='Точка '+sub(c[c[i].i<0?i:j].l)+' не принадлежит сечению.';
+ else{const ai=c[i].i,aj=c[j].i;if(!((ai-aj+n)%n==1||(aj-ai+n)%n==1))m='Эти точки не соседние: сторона сечения лежит в одной грани фигуры.';}
+ if(l.sides.some(s=>s.includes(i)&&s.includes(j)))return false;
+ if(m){l.msg=m;badSound();if(mist())return false;return false}
+ l.sides.push([i,j]);l.nw=l.sides.length-1;l.msg='';clickSound();
+ if(l.sides.length==n){l.stage='q';G.an=1;l.opts=shuf([l.L.n,...shuf(NAMES.filter(x=>x!=l.L.n)).slice(0,3)])}
+ return true;
+}
+function side(i,j){trySide(i,j);R()}
+function ans(j){const l=G.lv;if(l.stage!='q'||l.wr.includes(j))return;
+ if(l.opts[j]==l.L.n){l.ans=j;l.stage='d';G.an=1;G.score+=10+5*l.st+5*l.L.d;if(G.m==='tasks')G.correct=(G.correct||0)+1;goodSound();sparkle();conf()}else{l.wr.push(j);badSound();if(mist())return}R()}
+function es(i){const l=G.lv;if(l.stage!='e')return;
+ if(l.bad.includes(i)){l.stage='d';l.ok=i;G.an=1;G.score+=10+5*l.L.d;goodSound();sparkle();conf()}else{l.msg='Эта сторона построена верно. Ищи сторону, концы которой лежат в разных гранях.';badSound();if(mist())return}R()}
+function useHint(){
+ const l=G.lv;if(!l||l.stage!='b'||G.hints<=0||l.hint!==null)return;
+ const n=l.L.p.length;
+ const k=[...Array(n).keys()].find(i=>!l.sides.some(s=>s.includes(i)&&s.includes((i+1)%n)));
+ if(k===undefined)return;
+ l.hint=k;G.hints--;l.st=Math.max(0,l.st-1);R();
+}
+function nl(){G.clickPoint=null;G.idx++;if(G.idx>=G.list.length)fin();else load()}
+function fin(){const k=G.m+(G.d||'');if(G.m==='tasks'){best.tasks=Math.max(best.tasks||0,G.correct||0)}else if(G.m!='learn')best[k]=Math.max(best[k]||0,G.score);else conf();save();G.v='end';G.an=1;clearInterval(tmr);R()}
+function startTasks(){
+ const pool=shuf(LV.slice()).slice(0,5);
+ G={v:'play',m:'tasks',score:0,lives:5,idx:0,d:'',auto:false,hints:2,clickPoint:null,correct:0,list:pool};
+ load();
+}
+function blitz(){G={v:'blitz',score:0,tm:60,streak:0,an:1};bq();clearInterval(tmr);tmr=setInterval(()=>{G.tm--;const e=$('tm');if(e)e.textContent=G.tm+' с';if(G.tm<=0){G.m='blitz';G.d='';fin()}},1000)}
+function bq(){const L=rnd(LV);G.L=L;G.c=mk(L,0);G.opts=shuf([L.n,...shuf(NAMES.filter(x=>x!=L.n)).slice(0,3)]);G.bad=[];G.an=1;R()}
+function ba(j){if(G.opts[j]==G.L.n){G.streak++;G.score+=10+G.streak;goodSound();if(G.streak%5==0){conf();sparkle()}bq()}else{G.tm=Math.max(0,G.tm-5);G.streak=0;G.bad.push(j);G.sk=1;badSound();R()}}
+function draw(so,c,sides,fill,hl,mode,x){x=x||{};let g='';const S=SOL[so],hid=S.h.split(' ');
+ S.e.split(' ').forEach(e=>{const[a,b]=e.split('-'),p=pr(S.v[a]),q=pr(S.v[b]);g+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="var(--ln)" stroke-width="2" stroke-linecap="round" ${hid.includes(e)?'stroke-dasharray="5 5" opacity=".7"':''}/>`});
+ Object.keys(S.v).forEach(k=>{const[px,py]=pr(S.v[k]),r=S.v[k][0]>.4,u=S.v[k][2]>.5;g+=`<text x="${px+(r?9:-9)}" y="${py+(u?-8:15)}" font-size="13" fill="var(--mut)" text-anchor="${r?'start':'end'}">${sub(k)}</text>`});
+ if(fill)g+=`<polygon class="${x.an?'fl':''}" points="${c.filter(q=>q.i>=0).map(q=>pr(q.pos).join(',')).join(' ')}" fill="var(--ac)" fill-opacity=".28" stroke="var(--ac)" stroke-width="${sides.length?0:3.5}" stroke-linejoin="round"/>`;
+ sides.forEach(([a,b],k)=>{const p=pr(c[a].pos),q=pr(c[b].pos),bd=x.show&&x.bad.includes(k),cl=bd?'var(--bad)':'var(--ac)';
+  g+=`<line class="${x.nw===k?'sd':''}" pathLength="1" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${cl}" stroke-width="${bd?5:4}" stroke-linecap="round"/>`;
+  if(mode=='err')g+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="transparent" stroke-width="26" onclick="es(${k})" style="cursor:pointer"/>`});
+ if(mode)c.forEach((q,i)=>{const[px,py]=pr(q.pos),got=mode=='err'||sides.some(s=>s.includes(i)),v=typeof q.s=='string',h=hl.includes(i);
+  if(got)g+=`<circle class="${x.nw>=0&&sides[x.nw]&&sides[x.nw].includes(i)?'pop':''}" cx="${px}" cy="${py}" r="7" fill="var(--ac)" stroke="var(--card)" stroke-width="2"/>`;
+  else g+=`<circle class="ghost" cx="${px}" cy="${py}" r="${h?13:9}" fill="none" stroke="${h?'var(--ok)':'var(--ac)'}" stroke-width="3"/>`;
+  if(!v)g+=`<text x="${px+11}" y="${py-9}" font-size="15" font-weight="700" fill="${got?'var(--ac)':'var(--mut)'}">${q.l}</text>`;
+  if(mode=='drag'||mode=='click'){
+    const sel=G.clickPoint===i;
+    g+=`<circle data-point="${i}" cx="${px}" cy="${py}" r="${sel?40:34}" fill="${sel?'color-mix(in srgb, var(--ok) 18%, transparent)':'transparent'}" stroke="${sel?'var(--ok)':'transparent'}" stroke-width="${sel?3:8}" pointer-events="all" onpointerdown="pd(event,${i})" style="cursor:${mode=='click'?'pointer':'grab'};touch-action:none"/>`;
+  }});
+ return`<div id="sw" class="${G.sk?'shake':''}"><svg viewBox="0 0 400 340">${g}</svg></div>`}
+
+const FSH={
+ cube:{n:'Куб',v:CUBE,e:CE},
+ box:{n:'Параллелепипед',v:SOL.box.v,e:CE},
+ pyr:{n:'Пирамида',v:SOL.pyr.v,e:SOL.pyr.e},
+ pri:{n:'Треугольная призма',v:SOL.pri.v,e:SOL.pri.e},
+ tet:{n:'Тетраэдр',v:SOL.tet.v,e:SOL.tet.e},
+ oct:{n:'Октаэдр',v:SOL.oct.v,e:SOL.oct.e},
+ pri5:{n:'Пятиугольная призма',v:SOL.pri5.v,e:SOL.pri5.e}
+};
+function fRot(p){
+ let [x,y,z]=p,cy=Math.cos(F.ry),sy=Math.sin(F.ry),cx=Math.cos(F.rx),sx=Math.sin(F.rx);
+ let X=x*cy-z*sy,Z=x*sy+z*cy,Y=y;
+ let Y2=Y*cx-Z*sx,Z2=Y*sx+Z*cx;
+ return [X,Y2,Z2];
+}
+function fProj(p,W,H){
+ const q=fRot(p),sc=Math.min(W,H)*.27*F.zoom;
+ return [W/2+q[0]*sc,H/2-q[1]*sc-q[2]*sc*.15];
+}
+function fCenter(){
+ const v=Object.values(FSH[F.shape].v),c=v.reduce((a,p)=>a.map((x,i)=>x+p[i]),[0,0,0]).map(x=>x/v.length);
+ return v.map(p=>p.map((x,i)=>x-c[i]));
+}
+function fEdges(){
+ return FSH[F.shape].e.split(' ').map(e=>e.split('-'));
+}
+function fCameraBasis(){
+ const rx=F.rx,ry=F.ry,cy=Math.cos(ry),sy=Math.sin(ry),cx=Math.cos(rx),sx=Math.sin(rx);
+ // world directions corresponding to screen right, screen up and toward camera
+ const right=[cy,0,sy];
+ const up=[sy*sx,cx,-cy*sx];
+ const view=[-sy*cx,sx,cy*cx];
+ return {right,up,view};
+}
+function fPick3D(p,W,H){
+ const v=fCenter(),keys=Object.keys(FSH[F.shape].v),cands=[];
+ // Vertices first: a nearby vertex should win over an edge that merely passes nearby.
+ keys.forEach((k,i)=>{const q=fProj(v[i],W,H),z=fRot(v[i])[2],d=Math.hypot(p[0]-q[0],p[1]-q[1]);if(d<=30)cands.push({d,z,p:v[i],screen:q,e:[k,k],t:0,vertex:true})});
+ for(const [a,b] of fEdges()){
+   const ia=keys.indexOf(a),ib=keys.indexOf(b),pa=fProj(v[ia],W,H),pb=fProj(v[ib],W,H);
+   const vx=pb[0]-pa[0],vy=pb[1]-pa[1],len2=vx*vx+vy*vy||1;
+   let t=((p[0]-pa[0])*vx+(p[1]-pa[1])*vy)/len2;t=Math.max(0,Math.min(1,t));
+   const q=[pa[0]+vx*t,pa[1]+vy*t],d=Math.hypot(p[0]-q[0],p[1]-q[1]);
+   const z=(fRot(v[ia])[2]+fRot(v[ib])[2])/2;
+   if(d<=48)cands.push({d,z,p:v[ia].map((x,i)=>x+t*(v[ib][i]-x)),screen:q,e:[a,b],t,vertex:false});
+ }
+ if(!cands.length)return null;
+ // When projected edges overlap, prefer the visible (toward-camera) candidate.
+ const maxZ=Math.max(...cands.map(q=>q.z)),visible=cands.filter(q=>q.z>=maxZ-.22);
+ visible.sort((a,b)=>(a.vertex? -18:0)+a.d+(maxZ-a.z)*35-((b.vertex? -18:0)+b.d+(maxZ-b.z)*35));
+ return visible[0];
+}
+function fPlaneFromPoints(A,B){
+ if(!A||!B)return null;
+ const line=B.p.map((x,i)=>x-A.p[i]),basis=fCameraBasis();
+ const cross=(u,v)=>[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+ let n=cross(line,basis.view),nn=Math.hypot(...n);
+ if(nn<1e-7)return null;n=n.map(x=>x/nn);
+ return {n,c:A.p,a:A,b:B};
+}
+function fSection(plane){
+ if(!plane)return [];
+ const v=fCenter(),keys=Object.keys(FSH[F.shape].v),out=[];
+ const val=p=>(p[0]-plane.c[0])*plane.n[0]+(p[1]-plane.c[1])*plane.n[1]+(p[2]-plane.c[2])*plane.n[2];
+ const push=(p,edge)=>{if(!out.some(q=>dist(q.p,p)<.025))out.push({p,edge})};
+ for(const [aa,bb] of fEdges()){
+   const ia=keys.indexOf(aa),ib=keys.indexOf(bb),a=v[ia],b=v[ib],da=val(a),db=val(b);
+   if(Math.abs(da)<.00005)push(a,aa+'-'+bb);
+   if(da*db<0){const t=da/(da-db);push(a.map((x,i)=>x+t*(b[i]-x)),aa+'-'+bb)}
+ }
+ if(out.length<3)return [];
+ const pts=out.map(x=>x.p),cen=pts.reduce((a,p)=>a.map((x,i)=>x+p[i]),[0,0,0]).map(x=>x/pts.length);
+ const dot=(a,b)=>a.reduce((z,x,i)=>z+x*b[i],0),norm=a=>Math.hypot(...a);
+ let u=Math.abs(plane.n[0])<.8?[1,0,0]:[0,1,0];
+ const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ let nu=cross(plane.n,u);nu=nu.map(x=>x/norm(nu));let nv=cross(plane.n,nu);nv=nv.map(x=>x/norm(nv));
+ return out.sort((a,b)=>{
+   const aa=Math.atan2(dot(a.p.map((x,i)=>x-cen[i]),nv),dot(a.p.map((x,i)=>x-cen[i]),nu));
+   const bb=Math.atan2(dot(b.p.map((x,i)=>x-cen[i]),nv),dot(b.p.map((x,i)=>x-cen[i]),nu));
+   return aa-bb;
+ });
+}
+function fLabelPoints(){
+ const used=['M','N','K','P','Q','R','S','T','U','V','W','X','Y','Z'];
+ return F.pts.map((q,i)=>({p:q.p,l:used[i]||('P'+(i+1)),edge:q.edge}));
+}
+function fDrawLine(x,a,b,style,w,dash){x.beginPath();x.moveTo(...a);x.lineTo(...b);x.strokeStyle=style;x.lineWidth=w;x.setLineDash(dash||[]);x.stroke();x.setLineDash([])}
+function freeDraw(){
+ const c=$('freeCanvas');if(!c)return;const x=c.getContext('2d'),dpr=devicePixelRatio||1,w=c.clientWidth||720,h=c.clientHeight||620;c.width=Math.floor(w*dpr);c.height=Math.floor(h*dpr);x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
+ const cs=getComputedStyle(document.documentElement),ln=cs.getPropertyValue('--ln').trim(),ac=cs.getPropertyValue('--ac').trim(),mut=cs.getPropertyValue('--mut').trim(),ok=cs.getPropertyValue('--ok').trim(),card=cs.getPropertyValue('--card').trim();
+ const v=fCenter(),keys=Object.keys(FSH[F.shape].v),vs={};keys.forEach((k,i)=>vs[k]=fProj(v[i],w,h));
+ const edges=fEdges().map(e=>({e,z:(fRot(v[keys.indexOf(e[0])])[2]+fRot(v[keys.indexOf(e[1])])[2])/2})).sort((a,b)=>a.z-b.z);
+ edges.forEach(o=>fDrawLine(x,vs[o.e[0]],vs[o.e[1]],ln,2));
+ keys.forEach(k=>{const p=vs[k];x.beginPath();x.arc(p[0],p[1],5,0,Math.PI*2);x.fillStyle=ac;x.fill();x.font='700 14px system-ui';x.fillStyle=mut;x.fillText(k,p[0]+8,p[1]-8)});
+ if(F.cut){fDrawLine(x,F.cut.a,F.cut.b,ac,4,[9,7]);[F.cut.a,F.cut.b].forEach(q=>{x.beginPath();x.arc(q[0],q[1],10,0,Math.PI*2);x.fillStyle=ac;x.globalAlpha=.22;x.fill();x.globalAlpha=1})}
+ if(F.show&&F.pts.length>=3){
+   const ps=F.pts.map(q=>fProj(q.p,w,h));x.beginPath();ps.forEach((p,i)=>i?x.lineTo(...p):x.moveTo(...p));x.closePath();
+   x.fillStyle=ac;x.globalAlpha=.25;x.fill();x.globalAlpha=1;x.lineWidth=4;x.strokeStyle=ac;x.stroke();
+   const labs=fLabelPoints();labs.forEach(q=>{const p=fProj(q.p,w,h);x.beginPath();x.arc(p[0],p[1],10,0,Math.PI*2);x.fillStyle=ok;x.fill();x.font='800 15px system-ui';x.fillStyle=card;x.textAlign='center';x.textBaseline='middle';x.fillText(q.l,p[0],p[1]);x.textAlign='left';x.textBaseline='alphabetic';});
+ }
+ if(F.hover){const p=F.hover.screen;x.beginPath();x.arc(p[0],p[1],15,0,Math.PI*2);x.strokeStyle=ok;x.lineWidth=4;x.stroke();x.beginPath();x.arc(p[0],p[1],5,0,Math.PI*2);x.fillStyle=ok;x.fill()}
+}
+function freeSelect(k){F.shape=k;F.cut=null;F.pts=[];F.show=false;F.labels=[];F.plane=null;F.hover=null;F.zoomLocked=false;F.snapA=null;F.snapB=null;freeDraw();R()}
+function freeReset(){F.rx=-.42;F.ry=.55;F.zoom=1;F.cut=null;F.pts=[];F.show=false;F.labels=[];F.plane=null;F.hover=null;F.zoomLocked=false;F.snapA=null;F.snapB=null;freeDraw();R()}
+function freePointer(e){
+ const c=e.currentTarget,r=c.getBoundingClientRect(),p=[e.clientX-r.left,e.clientY-r.top];
+ if(F.mode==='cut'||e.shiftKey){
+   const hit=fPick3D(p,r.width,r.height);if(!hit){F.drag=null;return}
+   F.drag={type:'cut',a:p,b:p,A:hit,B:hit};F.cut={a:hit.screen,b:hit.screen};F.snapA=hit;F.snapB=hit;c.classList.add('drawing');c.setPointerCapture?.(e.pointerId);freeDraw();return;
+ }
+ F.drag={type:'rot',x:e.clientX,y:e.clientY,rx:F.rx,ry:F.ry};c.setPointerCapture?.(e.pointerId);
+}
+function freeMove(e){
+ if(!F.drag)return;const c=$('freeCanvas'),r=c.getBoundingClientRect();
+ if(F.drag.type==='rot'){F.ry=F.drag.ry+(e.clientX-F.drag.x)*.010;F.rx=F.drag.rx+(e.clientY-F.drag.y)*.010;F.rx=Math.max(-1.45,Math.min(1.45,F.rx));freeDraw()}
+ else{
+   const raw=[e.clientX-r.left,e.clientY-r.top],hit=fPick3D(raw,r.width,r.height);
+   F.drag.b=raw;F.snapB=hit||null;F.hover=hit||null;
+   F.cut={a:F.drag.A.screen,b:hit?hit.screen:raw};freeDraw();
+ }
+}
+function freeUp(e){
+ if(!F.drag)return;const d=F.drag;F.drag=null;const c=$('freeCanvas');c.classList.remove('drawing');c.releasePointerCapture?.(e.pointerId);
+ if(d.type==='cut'){
+   const B=F.snapB;if(B&&d.A&&B!==d.A&&d.A.e.join('-')!==B.e.join('-')){
+     const r=c.getBoundingClientRect(),pl=fPlaneFromPoints(d.A,B);F.plane=pl;F.pts=fSection(pl);F.show=F.pts.length>=3;F.labels=fLabelPoints();F.hover=null;F.zoomLocked=F.show;F.cut={a:d.A.screen,b:B.screen};
+     freeDraw();F.show?goodSound():badSound();R();
+   }else{F.show=false;F.plane=null;F.hover=null;F.cut=null;freeDraw();R()}
+ }
+}
+function freeWheel(e){e.preventDefault();if(F.zoomLocked)return;F.zoom=Math.max(.65,Math.min(2.25,F.zoom*(e.deltaY<0?1.09:.92)));freeDraw()}
+
+function settings(){G={v:'settings',an:1};R()}
+function setInputMode(v){settingsState.inputMode=v;G.clickPoint=null;R()}
+function theory(){G={v:'theory',tab:0,an:1};R()}
+function learnHub(){G={v:'learnhub',an:1};R()}
+function R(){const m=$('mn');$('bk').style.visibility=G.v=='menu'?'hidden':'visible';let h='';const A=G.an?'a':'';
+ if(G.v=='menu'){const B=k=>best[k]?` · рекорд ${best[k]}`:'';
+  const T=[['01','Обучение','Три простых уровня с подсказками',"start('learn')"],['02','Конструктор','Построение сечений, три уровня сложности',"G={v:'diff',an:1};R()"],['03','Блиц','60 секунд: определи фигуру сечения'+B('blitz'),'blitz()'],['04','Марафон','Все уровни подряд, три жизни'+B('mar'),"start('mar')"],['05','Найди ошибку','Найди неверно построенную сторону'+B('err'),"start('err')"]];
+  h=`<div class="card ${A}" style="margin-bottom:12px"><h2>Учебный тренажёр по стереометрии</h2><p>${LV.length} уровней, ${Object.keys(SOL).length} типов фигур. Переворачивай карточки, чтобы посмотреть описание режима.</p></div><div class="mode-grid">${[
+['01','Обучение + теория','📚','Изучай тему, смотри примеры и сразу переходи к практике','#3d6df2','learnHub()','Теория → пример → практика'],
+['02','Конструктор','✏️','Сам строй сечения на трёх уровнях','#7c4ddb',"G={v:'diff',an:1};R()",'3 уровня сложности'],
+['03','Блиц','⚡','Определи фигуру как можно быстрее','#d9811a','blitz()',`${best.blitz?`Рекорд: ${best.blitz} очков`:'60 секунд на старт'}`],
+['04','Марафон','🏆','Все задания подряд. Ошибки отнимают жизни','#0f9d73',"start('mar')",`${best.mar?`Рекорд: ${best.mar} очков`:'3 жизни'}`],
+['05','Найди ошибку','🔎','Найди неверную сторону уже построенного сечения','#e5484d',"start('err')",`${best.err?`Рекорд: ${best.err} очков`:'Проверь логику'}`],
+['06','Свободная 3D','🧊','Выбирай фигуру, вращай её и рисуй свою плоскость сечения','#0891b2',"G={v:'free',an:1};R()",'Свободное построение'],
+['07','Теория','📖','Коротко изучай правила, алгоритм и разобранные примеры','#8b5cf6','theory()','Правила + примеры'],
+['08','Задачи','📝','5 случайных заданий. В конце — оценка от 1 до 5','#ec4899','startTasks()',(best.tasks!==undefined?`Лучший результат: ${best.tasks}/5`:'Случайная генерация')]
+].map((t,k)=>`<div class="mode-card" style="animation-delay:${k*80+80}ms" onclick="${t[5]}"><div class="mc-inner"><div class="mc-face mc-front" style="--mc:${t[4]}"><div class="mc-num">${t[0]}</div><div class="mc-icon">${t[2]}</div><div class="mc-title">${t[1]}</div><div class="mc-hint">Нажми или наведи</div></div><div class="mc-face mc-back"><h3>${t[1]}</h3><p>${t[3]}</p><div class="mc-stat">${t[6]}</div></div></div></div>`).join('')}</div><p class="mode-note">8 разделов: тренировка, игры, свободная 3D, теория и задачи с оценкой.</p>`}
+
+ else if(G.v=='settings'){
+ h=`<div class="card ${A} settings-box"><h2>⚙ Настройки</h2><p>Настрой управление так, как тебе удобнее.</p>
+ <div class="setting-row"><div><b>Построение сечений</b><span>Как соединять точки в обычных заданиях</span></div><div class="seg"><button class="${settingsState.inputMode==='drag'?'active':''}" onclick="setInputMode('drag')">🖱 Перетаскиванием</button><button class="${settingsState.inputMode==='click'?'active':''}" onclick="setInputMode('click')">👆 Нажатиями</button></div></div>
+ <div class="setting-row"><div><b>Свободная 3D</b><span>В режиме сечения точки автоматически привязываются к видимым рёбрам.</span></div><span class="snap-indicator">● Автопривязка включена</span></div>
+ <button class="btn alt" onclick="menu()">← В меню</button></div>`;
+ }
+ else if(G.v=='free'){
+   const shapes=Object.entries(FSH);
+   h=`<div class="card ${A}"><h2>🧊 Свободная 3D-мастерская</h2><p>Экспериментируй с многогранниками и строй собственные сечения.</p></div>
+   <div class="free-wrap"><div class="card free-toolbar"><div class="group"><span class="label">Фигура</span>${shapes.map(([k,v])=>`<button class="free-shape ${F.shape==k?'active':''}" onclick="freeSelect('${k}')">${v.n}</button>`).join('')}</div><div class="group"><span class="label">Режим</span><button class="${F.mode==='rotate'?'active':''}" onclick="F.mode='rotate';F.hover=null;R()">↻ Вращать</button><button class="${F.mode==='cut'?'active':''}" onclick="F.mode='cut';F.show=false;F.zoomLocked=false;F.hover=null;R()">✏ Сечение</button><button onclick="freeReset()">↺ Сбросить</button></div></div>
+   <div class="free-canvas-wrap"><canvas id="freeCanvas" height="620" onpointerdown="freePointer(event)" onpointermove="freeMove(event)" onpointerup="freeUp(event)" onpointercancel="freeUp(event)" onwheel="freeWheel(event)"></canvas></div>
+   <div class="free-status"><span class="free-badge">Фигура: ${FSH[F.shape].n}</span><span class="free-badge">Масштаб: ${Math.round(F.zoom*100)}%</span>${F.show?`<span class="free-badge">Сечение: ${F.pts.length} точек · масштаб зафиксирован</span>`:''}</div>
+   <div class="card"><b>Управление</b><p class="free-help">Режим «Вращать»: тяни мышью по модели. Колесо — масштаб. Режим «Сечение»: тяни линию от одного ребра/вершины к другому. Концы автоматически привязываются к ближайшим рёбрам.</p><div class="free-tip">💡 Концы линии автоматически «прилипают» к видимым рёбрам и вершинам. После успешного построения сечение остаётся на месте, масштаб фиксируется, а его вершины получают обозначения M, N, K, P…</div>${F.plane&&!F.show?`<p class="msg">Не удалось построить корректное сечение. Попробуй провести линию между другими рёбрами.</p>`:''}${F.show?`<p class="good">Сечение построено корректно: ${F.pts.length} вершин.</p>`:''}</div></div>`;
+   setTimeout(freeDraw,0);
+ }
+ else if(G.v=='learnhub'){
+ h=`<div class="card ${A}"><h2>📚 Обучение + теория</h2><p>Сначала разберись в основных понятиях, затем сразу попробуй их на практике.</p></div><div class="theory-tabs"><button class="btn" onclick="theory()">📖 Открыть теорию</button><button class="btn alt" onclick="start('learn')">🎯 Начать обучение</button></div><div class="card"><h2>План обучения</h2><p>1. Планиметрия → 2. Аксиомы стереометрии → 3. Плоскости и прямые → 4. Сечения → 5. Практика.</p><div class="theory-example"><b>Совет:</b> если непонятно решение, сначала открой нужный раздел теории, а потом возвращайся в конструктор.</div></div>`;
+ }
+ else if(G.v=='theory'){
+   const tabs=['Планиметрия','Аксиомы','Стереометрия','Сечения','Примеры','Ошибки'];
+   const sections=[
+   `<h2>Планиметрия</h2><p>Планиметрия изучает фигуры на плоскости: точки, прямые, углы, треугольники, четырёхугольники и окружности.</p><h3>Что важно для стереометрии</h3><ul><li>Если две прямые пересекаются, у них есть общая точка.</li><li>Через две точки проходит единственная прямая.</li><li>При работе с сечениями полезно знать свойства параллельных прямых и признаки параллельности.</li><li>Для треугольников особенно важны подобие, средняя линия и сумма углов.</li></ul><div class="theory-example"><b>Связь:</b> каждая грань многогранника — плоская фигура, поэтому построение сечения внутри грани использует планиметрию.</div>`,
+   `<h2>Три основные аксиомы стереометрии</h2><div class="theory-example"><b>Аксиома 1.</b> Через любые три точки, не лежащие на одной прямой, проходит единственная плоскость.</div><div class="theory-example"><b>Аксиома 2.</b> Если две точки прямой принадлежат плоскости, то вся прямая принадлежит этой плоскости.</div><div class="theory-example"><b>Аксиома 3.</b> Если две плоскости имеют общую точку, то они пересекаются по прямой, проходящей через эту точку.</div><p>Эти аксиомы являются базой рассуждений о взаимном расположении точек, прямых и плоскостей.</p>`,
+   `<h2>Стереометрия</h2><p>Стереометрия изучает фигуры в пространстве: прямые и плоскости, многогранники и тела вращения.</p><h3>Основные отношения</h3><ul><li><b>Прямая и плоскость:</b> прямая может лежать в плоскости, пересекать её в одной точке или быть параллельной ей.</li><li><b>Две плоскости:</b> могут совпадать, быть параллельными или пересекаться по прямой.</li><li><b>Параллельность:</b> параллельные прямые в одной плоскости не пересекаются.</li></ul><div class="theory-example"><b>Для задач:</b> всегда отмечай, в какой грани находится каждая точка. Это помогает понять, какие отрезки можно соединять.</div>`,
+   `<h2>Сечения многогранников</h2><p>Сечение — многоугольник, полученный пересечением многогранника плоскостью.</p><h3>Алгоритм</h3><div class="step"><i>1</i><p>Найди известные точки сечения.</p></div><div class="step"><i>2</i><p>На каждой пересечённой грани ищи вторую точку.</p></div><div class="step"><i>3</i><p>Соединяй две точки только внутри одной грани.</p></div><div class="step"><i>4</i><p>Продолжай по соседним граням, пока многоугольник не замкнётся.</p></div><div class="theory-example"><b>Важное правило:</b> если плоскость пересекает две параллельные грани, линии сечения в этих гранях параллельны.</div>`,
+   `<h2>Разобранные примеры</h2>
+<div class="theory-example" style="border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,var(--card))"><b style="color:var(--ok)">✓ Куб + плоскость параллельна грани.</b><br>Сечение имеет ту же форму, что и грань: квадрат или прямоугольник.</div>
+<div class="theory-example" style="border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,var(--card))"><b style="color:var(--ok)">✓ Куб + плоскость через три ребра из одной вершины.</b><br>Пересекаются три грани → получается треугольник.</div>
+<div class="theory-example" style="border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,var(--card))"><b style="color:var(--ok)">✓ Куб + плоскость пересекает шесть граней.</b><br>Сечение может быть шестиугольником. Число сторон ≤ числа пересечённых граней.</div>
+<div style="margin:14px 0;padding:12px;border-radius:16px;background:var(--bg);border:1px solid var(--ln);text-align:center">
+<svg viewBox="0 0 300 120" width="280">
+<polygon points="30,90 70,25 110,90" fill="color-mix(in srgb,var(--ac) 20%,transparent)" stroke="var(--ac)" stroke-width="2"/><text x="45" y="110" font-size="11" fill="var(--mut)">треугольник</text>
+<rect x="140" y="30" width="55" height="55" fill="color-mix(in srgb,var(--ok) 20%,transparent)" stroke="var(--ok)" stroke-width="2"/><text x="140" y="105" font-size="11" fill="var(--mut)">квадрат</text>
+<polygon points="240,35 270,35 285,58 270,82 240,82 225,58" fill="color-mix(in srgb,var(--ac) 20%,transparent)" stroke="var(--ac)" stroke-width="2"/><text x="230" y="105" font-size="11" fill="var(--mut)">шестиугольник</text>
+</svg>
+<div style="font-size:13px;color:var(--mut);margin-top:8px">Возможные формы сечений куба</div></div>`,
+   `<h2>Типичные ошибки (с картинками)</h2>
+<div class="theory-example" style="border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--card))"><b style="color:var(--bad)">✗ Соединять точки из разных граней.</b><br>Сторона сечения всегда лежит <b>внутри одной грани</b>. Если точки на разных гранях — соединять нельзя.</div>
+<div style="margin:14px 0;padding:12px;border-radius:16px;background:var(--bg);border:1px solid var(--ln);text-align:center">
+<svg viewBox="0 0 280 150" width="260"><path d="M50,40 L150,40 L180,20 L80,20 Z" fill="none" stroke="var(--ln)" stroke-width="1.5"/><path d="M50,40 L50,120 L150,120 L150,40" fill="none" stroke="var(--ln)" stroke-width="1.5"/><path d="M150,40 L180,20 L180,100 L150,120" fill="none" stroke="var(--ln)" stroke-width="1.5"/><circle cx="70" cy="60" r="5" fill="var(--ok)"/><circle cx="160" cy="90" r="5" fill="var(--bad)"/><line x1="70" y1="60" x2="160" y2="90" stroke="var(--bad)" stroke-width="2.5" stroke-dasharray="6 4"/><text x="55" y="55" font-size="12" fill="var(--ok)">M</text><text x="165" y="85" font-size="12" fill="var(--bad)">N</text><text x="70" y="140" font-size="12" fill="var(--bad)">нельзя: разные грани</text></svg>
+<div style="font-size:13px;color:var(--mut);margin-top:8px">Ошибка: точки M и N лежат в разных гранях</div></div>
+<div class="theory-example" style="border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--card))"><b style="color:var(--bad)">✗ Забывать скрытые рёбра.</b><br>На рисунке часть рёбер «спрятана» за фигурой (пунктир). Точки на них тоже нужно учитывать.</div>
+<div class="theory-example" style="border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--card))"><b style="color:var(--bad)">✗ Не проверять параллельность.</b><br>Если грани параллельны, линии сечения на них тоже параллельны.</div>
+<div class="theory-example" style="border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,var(--card))"><b style="color:var(--ok)">✓ Как проверить себя:</b> пройди по каждой стороне сечения и назови грань, в которой она лежит. Если для какой-то стороны грани нет — построение неверно.</div>`
+   ];
+   h=`<div class="card ${A} theory-section"><h2>📖 Теория по геометрии</h2><p>Справочник для 10 класса: от планиметрии и аксиом до сечений.</p></div><div class="theory-tabs">${tabs.map((t,i)=>`<button class="btn ${G.tab===i?'':'alt'}" onclick="G.tab=${i};G.an=1;R()">${t}</button>`).join('')}</div><div class="card theory-section">${sections[G.tab]}</div><div class="theory-tabs"><button class="btn alt" onclick="learnHub()">← Обучение</button><button class="btn" onclick="start('learn')">🎯 Практика</button></div>`;
+ }
+ else if(G.v=='diff')h=`<div class="card ${A}"><h2>Выбор сложности</h2><p>Чем выше сложность, тем больше лишних точек и необычнее сечения.</p></div><div style="height:10px"></div>`+[['Лёгкий','Простые сечения, мало лишних точек'],['Средний','Диагонали, параллелограммы, трапеции'],['Сложный','Пятиугольники и шестиугольники']].map((x,i)=>`<button class="tile" style="animation-delay:${i*70+80}ms" onclick="start('con',${i+1})"><div class="ic">${i+1}</div><div class="tx"><b>${x[0]}</b><span>${x[1]}${best['con'+(i+1)]?' · рекорд '+best['con'+(i+1)]:''}</span></div><i class="ch">›</i></button>`).join('');
+ else if(G.v=='play'){const l=G.lv,L=l.L,n=L.p.length,err=G.m=='err',inf=`<div class="info"><span>${SOL[L.s].n} · ${G.idx+1}/${G.list.length}</span><span>${G.m=='mar'||err||G.m=='tasks'?`<span class="hh">${'♥'.repeat(G.lives)}</span>`:'★'.repeat(l.st)+'☆'.repeat(3-l.st)} · ${G.score}</span></div><div class="bar"><i style="width:${G.idx/G.list.length*100}%"></i></div>`;
+  if(err){const sd=l.sides[l.bad[0]],ex=`Точки ${sub(l.c[sd[0]].l)} и ${sub(l.c[sd[1]].l)} лежат в разных гранях, поэтому соединить их стороной сечения нельзя.`;
+   h=inf+draw(L.s,l.c,l.sides,1,[],'err',{bad:l.bad,show:l.stage=='d',an:G.an})+`<div class="card ${A}"><h2>Найди ошибку</h2>`+(l.stage=='e'?`<p>В построении одна сторона неверная. Нажми на неё.</p>${l.msg?`<p class="msg">${l.msg}</p>`:''}`:`<p class="good">Верно!</p><p>${ex} Сторона сечения всегда лежит в одной грани.</p><button class="btn" onclick="nl()">Дальше</button>`)+'</div>'}
+  else{const hl=[];if(l.stage=='b'){
+ const k=[...Array(n).keys()].find(i=>!l.sides.some(s=>s.includes(i)&&s.includes((i+1)%n)));
+ if(G.auto)hl.push(k);
+ else if(l.hint!==null)hl.push(l.hint);
+}
+   h=inf+draw(L.s,l.c,l.sides,l.stage!='b',hl,l.stage=='b'?(settingsState.inputMode):null,{nw:l.nw,an:G.an})+`<div class="card ${A}">`;
+   if(l.stage=='b')h+=`<h2>Построй сечение</h2><p>${settingsState.inputMode==='click'?'Нажми на первую точку, затем на вторую.':'Тяни линию от одной точки к другой.'} Выбирай соседние точки сечения. Построено сторон: ${l.sides.length} из ${n}.</p>${l.msg?`<p class="msg">${l.msg}</p>`:''}${G.auto?'<p>Зелёное кольцо показывает одну точку следующей стороны.</p>':G.hints>0&&l.hint===null?`<button class="btn alt" onclick="useHint()">Подсказка · осталось ${G.hints}</button>`:`<p>Подсказок осталось: ${G.hints}</p>`}`;
+   else{h+=`<h2>Какая это фигура?</h2><div class="opts">${l.opts.map((o,j)=>`<button class="${l.ans===j?'ok':l.wr.includes(j)?'bad':''}" onclick="ans(${j})">${o}</button>`).join('')}</div>`;
+    if(l.stage=='d')h+=`<p class="good">Верно! ${L.n}.</p><p>${L.t}</p><p class="good">+${10+5*l.st+5*l.L.d} очков</p><button class="btn success-flash" onclick="nl()">Дальше</button>`}
+   h+='</div>'}}
+ else if(G.v=='blitz')h=`<div class="info"><span>Счёт: ${G.score}${G.streak>1?' · серия ×'+G.streak:''}</span><span id="tm">${G.tm} с</span></div><div class="bar"><i style="width:${G.tm/60*100}%"></i></div>`+draw(G.L.s,G.c,[],1,[],null,{an:G.an})+`<div class="card"><h2>Какая фигура в сечении?</h2><div class="opts">${G.opts.map((o,j)=>`<button class="${G.bad.includes(j)?'bad':''}" onclick="ba(${j})">${o}</button>`).join('')}</div><p>Ошибка отнимает 5 секунд.</p></div>`;
+ else if(G.v=='end'){
+ if(G.m==='tasks'){
+  const correct=G.correct||0;
+  const grade=correct>=5?5:correct===4?4:correct===3?3:correct===2?2:1;
+  const words={5:'Отлично!',4:'Хорошо!',3:'Удовлетворительно',2:'Нужно повторить',1:'Стоит ещё потренироваться'};
+  h=`<div class="card a" style="text-align:center;padding:24px"><div style="font-size:64px;font-weight:800;color:var(--ac);line-height:1">${grade}</div><p style="font-size:18px;margin-top:8px">${words[grade]}</p><p>Верно: <b>${correct}</b> из 5 · Очки: ${G.score}</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn" onclick="startTasks()">Ещё раз</button><button class="btn alt" onclick="menu()">Меню</button></div></div>`;
+ }else{
+  const w=G.m=='learn',r=G.m=='blitz'?'blitz()':w?'menu()':`start('${G.m}',${G.d||0})`;
+  h=`<div class="card a"><div class="big">${w?'Обучение пройдено':'Игра окончена'}</div><p style="text-align:center;font-size:24px;color:var(--tx)"><b>${G.score}</b> очков</p><p style="text-align:center">${w?'Теперь попробуй Конструктор.':'Рекорд: '+(best[G.m+(G.d||'')]||0)}</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn" onclick="${r}">${w?'В меню':'Ещё раз'}</button><button class="btn alt" onclick="menu()">Меню</button></div></div>`;
+ }
+}
+ m.innerHTML=h;G.an=0;G.sk=0;if(G.lv)G.lv.nw=-1}
+window.addEventListener('load',()=>{setTimeout(()=>{const ov=document.getElementById('loader-overlay');if(ov)ov.classList.add('hide')},1800)});
+if(document.readyState==='complete'){setTimeout(()=>{const ov=document.getElementById('loader-overlay');if(ov)ov.classList.add('hide')},1800)}
+menu();
+</script></body></html>
